@@ -39,6 +39,6 @@ public class UserLogic {
         }
 
         System.out.println("ユーザー名：" + user.getName() + "でログインしました。");
-        return null;
+        return user;
     }
 }
