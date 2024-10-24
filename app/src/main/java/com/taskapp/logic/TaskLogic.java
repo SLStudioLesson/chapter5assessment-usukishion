@@ -1,8 +1,12 @@
 package com.taskapp.logic;
 
+import java.util.List;
+
 import com.taskapp.dataaccess.LogDataAccess;
 import com.taskapp.dataaccess.TaskDataAccess;
 import com.taskapp.dataaccess.UserDataAccess;
+import com.taskapp.model.Task;
+import com.taskapp.model.User;
 
 public class TaskLogic {
     private final TaskDataAccess taskDataAccess;
@@ -34,8 +38,53 @@ public class TaskLogic {
      * @see com.taskapp.dataaccess.TaskDataAccess#findAll()
      * @param loginUser ログインユーザー
      */
-    // public void showAll(User loginUser) {
-    // }
+    //設問2
+    public void showAll(User loginUser) {
+
+        if (loginUser == null) {
+            // 修正: ログイン情報がnullのチェックと適切なエラーメッセージの表示
+            System.out.println("ログインユーザー情報が必要です。");
+            return;
+        }
+
+        List<Task> tasks = taskDataAccess.findAll();
+
+        if (tasks == null || tasks.isEmpty()) {
+            // 修正: タスクの有無について正しくチェック
+            System.out.println("タスクが見つかりません。");
+            return;
+        }
+
+        int count = 1;
+        for (Task task : tasks) {
+            String status = "";
+            switch (task.getStatus()) {
+                case 0:
+                    status = "未着手";
+                    break;
+                case 1:
+                    status = "着手中";
+                    break;
+                case 2:
+                    status = "完了";
+                    break;
+                case 3:
+                    status = "不明";
+                    break;
+            }
+
+            User taskUser = userDataAccess.findByCode(task.getRepUser().getCode());
+            String userDisplay;
+            if (taskUser.getCode() == loginUser.getCode()) {
+                userDisplay = "あなたが担当しています";
+            } else {
+                userDisplay = taskUser.getName() + "が担当しています";
+            }
+
+            System.out.println("タスク名：" + task.getName() + ", 担当者名：" + userDisplay + ", ステータス：" + status);
+        }
+    }
+
 
     /**
      * 新しいタスクを保存します。
